@@ -1,0 +1,388 @@
+<title>Baliza · Prototipo MVP</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Concepto: aplicación municipal sobria. Mapa protagonista, paneles claros, color solo para estado. */
+:root{
+--bg:#F3F5F8;--surf:#FFFFFF;--surf2:#F8F9FB;--ink:#12203A;--mut:#5A6578;--line:#E1E5EB;
+--brand:#0F5B8C;--brand-ink:#FFFFFF;--brand-soft:#E8F2F9;
+--map:#F3F1EB;--blk:#E2E6DA;--park:#CDE3C1;--h0:#CBD1DA;
+--rep-bg:#FDE2E0;--rep:#D92D20;--ver-bg:#BBD6FF;--ver:#2E6FD8;--res-bg:#8EDAA8;--res:#16A34A;--hd:#7A5AF8;--hm:#D9D6FE;
+--warn-bg:#FEF0C7;--warn:#8A4207;--urg-bg:#FEE4E2;--urg:#B42318;--ok-bg:#DCFAE6;--ok:#067647;--info-bg:#E4EAFF;--info:#3538CD;--gray-bg:#EEF0F4;--gray:#475467;
+--shadow:0 8px 28px rgba(16,24,40,.14);
+--f-head:"Space Grotesk","Inter",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+--bg:#0B1322;--surf:#131D31;--surf2:#18233A;--ink:#E7EDF8;--mut:#9AA7BE;--line:#26324B;
+--brand:#2F86C0;--brand-ink:#FFFFFF;--brand-soft:#12304A;
+--map:#101827;--blk:#1A2539;--park:#1D3A2B;--h0:#2D394F;
+--rep-bg:#4B1F1C;--rep:#F97066;--ver-bg:#1E3A6B;--ver:#6FA3F5;--res-bg:#1D5A3A;--res:#4ADE80;--hd:#9B8AFB;--hm:#3A3470;
+--warn-bg:#4A3A12;--warn:#FDD27A;--urg-bg:#4B1F1C;--urg:#FDA29B;--ok-bg:#12402B;--ok:#75E0A7;--info-bg:#24305F;--info:#B2C2FF;--gray-bg:#212C42;--gray:#B7C0D1;
+--shadow:0 8px 28px rgba(0,0,0,.5);color-scheme:dark}}
+:root[data-theme="dark"]{
+--bg:#0B1322;--surf:#131D31;--surf2:#18233A;--ink:#E7EDF8;--mut:#9AA7BE;--line:#26324B;
+--brand:#2F86C0;--brand-ink:#FFFFFF;--brand-soft:#12304A;
+--map:#101827;--blk:#1A2539;--park:#1D3A2B;--h0:#2D394F;
+--rep-bg:#4B1F1C;--rep:#F97066;--ver-bg:#1E3A6B;--ver:#6FA3F5;--res-bg:#1D5A3A;--res:#4ADE80;--hd:#9B8AFB;--hm:#3A3470;
+--warn-bg:#4A3A12;--warn:#FDD27A;--urg-bg:#4B1F1C;--urg:#FDA29B;--ok-bg:#12402B;--ok:#75E0A7;--info-bg:#24305F;--info:#B2C2FF;--gray-bg:#212C42;--gray:#B7C0D1;
+--shadow:0 8px 28px rgba(0,0,0,.5);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:14px;line-height:1.45;padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.wrap{max-width:1500px;margin:0 auto;padding-block:14px 28px;display:flex;flex-direction:column;gap:12px}
+.mut{color:var(--mut)}
+/* header */
+.app{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.brand{display:flex;align-items:center;gap:9px;font-family:var(--f-head);font-weight:700;font-size:18px}
+.mark{width:26px;height:26px;border-radius:7px;background:var(--brand)}
+.seg{display:flex;background:var(--gray-bg);border-radius:9px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:6px 13px;border-radius:7px;font-weight:500;font-size:13px;color:var(--mut)}
+.seg button.on{background:var(--surf);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(16,24,40,.12)}
+.sp{flex:1}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:500;background:var(--gray-bg);color:var(--gray)}
+.btn{border:1px solid transparent;background:var(--brand);color:var(--brand-ink);border-radius:9px;padding:9px 14px;font-weight:600;font-size:13px}
+.btn.o{background:var(--surf);color:var(--ink);border-color:var(--line)}
+.btn.red{background:var(--rep);color:#fff}
+.btn:disabled{background:var(--gray-bg);color:var(--mut);cursor:not-allowed;border-color:transparent}
+.btn.sm{padding:6px 10px;font-size:12px}
+/* guide */
+.guide{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:12px}
+.guide b{font-family:var(--f-head);font-size:13px}
+.st{display:inline-flex;gap:6px;align-items:center;padding:4px 10px;border-radius:99px;background:var(--surf);border:1px solid var(--line);color:var(--mut)}
+.st i{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--line);display:inline-block;font-style:normal;font-size:9px;line-height:11px;text-align:center}
+.st.d{color:var(--ok);border-color:var(--ok)}.st.d i{background:var(--ok);border-color:var(--ok);color:var(--surf)}
+/* work area */
+.work{display:grid;grid-template-columns:340px minmax(0,1fr) 380px;gap:12px;align-items:start}
+.work.nodet{grid-template-columns:340px minmax(0,1fr)}
+.work.junta{grid-template-columns:minmax(0,1fr) 380px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px}
+.side{padding:14px;display:flex;flex-direction:column;gap:10px;max-height:640px;overflow:auto}
+.side h2,.panel h2{font-family:var(--f-head);font-size:16px;margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surf);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:500;color:var(--mut)}
+.chip.on{background:var(--ink);color:var(--surf);border-color:var(--ink)}
+.item{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--surf);width:100%;text-align:left}
+.item.sel{border-color:var(--brand);background:var(--brand-soft)}
+.item .t{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.item b{font-size:13px}.item small{color:var(--mut);font-size:12px}
+.cb{width:18px;height:18px;flex:none;margin-top:1px;accent-color:var(--brand)}
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:600;margin:0 4px 0 0}
+.b-rep{background:var(--warn-bg);color:var(--warn)}.b-urg{background:var(--urg-bg);color:var(--urg)}.b-ver{background:var(--info-bg);color:var(--info)}
+.b-res{background:var(--ok-bg);color:var(--ok)}.b-gr{background:var(--gray-bg);color:var(--gray)}
+.bar{background:var(--ink);color:var(--surf);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;position:sticky;bottom:0}
+/* map */
+.mapbox{position:relative;border-radius:12px;border:1px solid var(--line);overflow:hidden;background:var(--map)}
+.mapscroll{overflow:auto;max-height:640px}
+.map{position:relative;width:1076px;height:484px;background:var(--map);touch-action:pan-x pan-y}
+.map.draw{cursor:crosshair;touch-action:none}
+.blk{position:absolute;width:150px;height:92px;background:var(--blk);border-radius:4px}
+.blk.park{background:var(--park)}
+.bl{position:absolute;width:150px;text-align:center;font-size:9px;font-weight:600;color:var(--mut);pointer-events:none;letter-spacing:.02em}
+.h{position:absolute;width:15px;height:15px;border-radius:3px;background:var(--h0);border:0;padding:0}
+.h.rep{background:var(--rep-bg);box-shadow:inset 0 0 0 1.5px var(--rep)}
+.h.ver{background:var(--ver-bg);box-shadow:inset 0 0 0 1.5px var(--ver)}
+.h.res{background:var(--res-bg);box-shadow:inset 0 0 0 1.5px var(--res)}
+.h.hd{background:var(--hd);box-shadow:inset 0 0 0 1.5px var(--hd)}.h.hm{background:var(--hm);box-shadow:inset 0 0 0 1.5px var(--hd)}
+.h.rep,.h.ver,.h.res,.h.hd,.h.hm,.h.pick{cursor:pointer}
+.map.pickmode .h{cursor:pointer}
+.ring{position:absolute;width:25px;height:25px;border:2.5px solid var(--brand);border-radius:6px;pointer-events:none;z-index:3}
+.ring.multi{border-style:dashed}
+.pin{position:absolute;width:15px;height:15px;border-radius:50%;background:var(--rep);color:#fff;font-size:9px;font-weight:700;text-align:center;line-height:15px;border:1.5px solid var(--surf);z-index:4;pointer-events:none}
+.rect{position:absolute;border:2.5px solid var(--rep);background:color-mix(in srgb,var(--rep) 16%,transparent);z-index:5;pointer-events:none}
+.hdl{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--surf);border:2px solid var(--rep);z-index:6;pointer-events:none}
+.ov{position:absolute;z-index:8;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;box-shadow:var(--shadow)}
+.legend{left:10px;bottom:10px}.legend div{display:flex;gap:8px;align-items:center;margin-top:5px}.legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+.attr{position:absolute;right:8px;bottom:5px;font-size:10px;color:var(--mut);z-index:7}
+.simtag{position:absolute;left:10px;top:10px;z-index:8;background:var(--warn-bg);color:var(--warn);border-radius:99px;padding:4px 10px;font-size:12px;font-weight:600}
+.mapnote{padding:8px 12px;font-size:12px;color:var(--mut);border-top:1px solid var(--line);background:var(--surf)}
+/* panels */
+.panel{padding:16px;display:flex;flex-direction:column;gap:12px;max-height:700px;overflow:auto}
+.lbl{font-size:12px;font-weight:600;margin-bottom:5px;display:flex;gap:6px;align-items:center}
+.req{color:var(--urg);font-weight:600}
+textarea,input[type=text],input[type=password],select{width:100%;font:inherit;color:var(--ink);background:var(--surf);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{resize:vertical;min-height:70px}
+textarea.r{border-color:var(--rep)}
+.ctx{background:var(--surf2);border:1px solid var(--line);border-radius:10px;padding:11px;font-size:12px;display:flex;flex-direction:column;gap:5px}
+.ctx div{display:flex;gap:8px}.ctx span:first-child{width:96px;flex:none;color:var(--mut)}.ctx span:last-child{font-weight:500}
+.urgbox{display:flex;gap:10px;align-items:center;background:var(--urg-bg);color:var(--urg);border-radius:10px;padding:11px;font-size:12px}
+.tg{width:42px;height:24px;border-radius:99px;background:var(--line);border:0;position:relative;flex:none}
+.tg::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s}
+.tg.on{background:var(--rep)}.tg.on::after{transform:translateX(18px)}
+.tl{border-left:2px solid var(--line);padding-left:13px;display:flex;flex-direction:column;gap:10px;font-size:12px}
+.tl b.u{color:var(--urg)}.tl b.g{color:var(--ok)}
+.note{border-radius:9px;padding:10px 12px;font-size:12px}
+.n-info{background:var(--brand-soft);color:var(--brand)}.n-warn{background:var(--warn-bg);color:var(--warn)}.n-err{background:var(--urg-bg);color:var(--urg)}.n-ok{background:var(--ok-bg);color:var(--ok)}
+.evt{display:flex;gap:6px;flex-wrap:wrap}.evt button{border:1px solid var(--line);background:var(--surf);border-radius:99px;padding:7px 12px;font-size:13px;font-weight:500}
+.evt button.on{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+/* tables */
+.tw{overflow:auto}table{border-collapse:collapse;width:100%;min-width:900px}
+th{font-size:11px;text-align:left;color:var(--mut);padding:10px 16px;background:var(--surf2);border-bottom:1px solid var(--line);font-weight:600}
+td{padding:13px 16px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+/* login */
+.login{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);min-height:560px;overflow:hidden}
+.lbrand{background:#0B3F63;color:#fff;padding:44px;display:flex;flex-direction:column;justify-content:space-between;gap:30px}
+.lbrand h1{font-family:var(--f-head);font-size:36px;line-height:1.15;margin:0;text-wrap:balance}
+.lform{padding:44px;display:flex;flex-direction:column;gap:16px;justify-content:center;max-width:520px}
+.acc{border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}
+/* modal/toast */
+.modalbg{position:fixed;inset:0;background:rgba(10,18,32,.55);z-index:50;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--surf);border-radius:16px;padding:22px;width:min(440px,100%);display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surf);padding:10px 16px;border-radius:10px;font-size:13px;z-index:60;max-width:90vw}
+h3{font-family:var(--f-head);font-size:15px;margin:0 0 6px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+ul.l{margin:0;padding-left:18px;line-height:1.75}
+@media (max-width:1100px){.work,.work.nodet,.work.junta{grid-template-columns:minmax(0,1fr)}.side,.panel{max-height:none}.login{grid-template-columns:1fr}.lbrand{padding:28px}.lform{padding:24px}}
+@media (prefers-reduced-motion:reduce){.tg::after{transition:none}}
+</style>
+
+<div class="wrap" id="app"></div>
+<div id="layer"></div>
+
+<script>
+(function(){
+var COLS=6,ROWS=4,BW=150,BH=92,GX=26,GY=24,PAD=20,HS=15;
+var NAMES={'1-2':'Pje. Los Aromos','1-3':'Calle Las Acacias','2-2':'Calle El Boldo','3-3':'Plaza Villa Independencia'};
+var HISTN={'0-0':'Achupallas · bloque A','0-1':'Achupallas · bloque B','1-0':'Villa Independencia · bloque C','1-1':'Villa Independencia · bloque D','2-0':'Achupallas · bloque E','2-1':'Achupallas · bloque F','3-0':'Villa Independencia · bloque G','3-1':'Villa Independencia · bloque H'};
+var S;
+function now(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function init(){
+  S={tab:'proto',role:null,screen:'login',loginErr:false,blocks:[],houses:[],hist:[],histLayer:false,histInfo:null,sel:null,multi:{},filter:'all',origin:'all',
+     junta:{type:'Incendio',mode:'contour',pick:null,rect:null},resText:'',noteText:'',modal:null,steps:{},toast:'',history:[
+     {name:'Calle El Boldo · Achupallas Alto',type:'Incendio',date:'12 nov 2026 · 17:30',iso:'2026-11-12',viv:'8 / 8 resueltas',origin:'ej',state:'Cerrada',note:'Retiro de escombros y reubicación temporal registrados.'},
+     {name:'Calle Las Acacias · bloque 2',type:'Incendio',date:'12 nov 2026 · 09:15',iso:'2026-11-12',viv:'3 / 4 resueltas',origin:'ej',state:'Descartada',note:'Afectación descartada tras visita: sin daño en estructura.'},
+     {name:'Sector Achupallas · bloque A',type:'Incendio',date:'02 feb 2024',iso:'2024-02-02',viv:'Daño documentado',origin:'hist',state:'Histórico',note:'Fuente: CIGIDEN (fig. 63) · Copernicus EMSN188'},
+     {name:'Sector Villa Independencia · bloque C',type:'Incendio',date:'03 feb 2024',iso:'2024-02-03',viv:'Daño documentado',origin:'hist',state:'Histórico',note:'Fuente: CIGIDEN (fig. 63) · Copernicus EMSN188'}]};
+  var hid=0;
+  for(var r=0;r<ROWS;r++)for(var c=0;c<COLS;c++){
+    var k=r+'-'+c;var b={k:k,r:r,c:c,x:PAD+c*(BW+GX),y:PAD+r*(BH+GY),name:NAMES[k]||('Manzana '+(r+1)+'-'+(c+1)),closed:false,park:k==='3-3',hist:HISTN[k]||null};S.blocks.push(b);
+    if(b.park)continue;
+    for(var i=0;i<2;i++)for(var j=0;j<6;j++){
+      hid++;var h={id:'H'+hid,n:hid,b:k,x:b.x+10+j*(HS+8),y:i?b.y+BH-10-HS:b.y+10,w:HS,h:HS,st:'none',urg:false,log:[],obs:'',src:'seed',type:'Incendio',t0:0,i:i,j:j};
+      if(b.hist){var v=(hid*53+7)%100;h.hist=v<45?'hd':v<85?'hm':'';}
+      S.houses.push(h);}
+  }
+  function seed(k,i,j,st,urg,rtext){var h=S.houses.filter(function(x){return x.b===k&&x.i===i&&x.j===j})[0];h.st=st;h.urg=!!urg;h.t0=1;h.log=[{t:'10:02',txt:'Reporte recibido · Junta de prueba · Por verificar'}];
+    if(urg)h.log.push({t:'10:05',txt:'Marcada como Urgente',cls:'u'});if(st==='ver')h.log.push({t:'10:40',txt:'Verificada en terreno'});if(st==='res'){h.log.push({t:'10:40',txt:'Verificada en terreno'});h.log.push({t:'11:50',txt:'Resuelta · «'+rtext+'»',cls:'g'})}}
+  seed('1-2',0,1,'rep');seed('1-2',0,2,'rep');
+  seed('1-3',1,0,'rep');seed('1-3',1,1,'rep',true);seed('1-3',1,2,'rep');seed('1-3',1,3,'ver');
+  seed('2-2',0,0,'res',false,'Retiro de escombros y reubicación temporal.');seed('2-2',0,1,'ver');seed('2-2',0,2,'ver');seed('2-2',1,4,'rep');seed('2-2',1,5,'rep');
+}
+function blk(k){return S.blocks.filter(function(b){return b.k===k})[0]}
+function house(id){return S.houses.filter(function(h){return h.id===id})[0]}
+function visible(){return S.houses.filter(function(h){return h.st!=='none'&&!blk(h.b).closed})}
+function addr(h){var b=blk(h.b);return b.name}
+function num(h){return '#'+String(h.n).padStart(4,'0')}
+function badges(h){var s='';if(h.urg)s+='<span class="badge b-urg">Urgente</span>';var m={rep:['b-rep','Por verificar'],ver:['b-ver','Verificada'],res:['b-res','Resuelta'],desc:['b-gr','Descartada']}[h.st];return s+'<span class="badge '+m[0]+'">'+m[1]+'</span>'}
+function log(h,txt,cls){h.log.push({t:now(),txt:txt,cls:cls})}
+function toast(t){S.toast=t;var el=document.getElementById('toast');if(el)el.remove();var d=document.createElement('div');d.id='toast';d.className='toast';d.setAttribute('role','status');d.textContent=t;document.body.appendChild(d);setTimeout(function(){if(d.parentNode)d.remove()},3600)}
+function checkClose(k){var b=blk(k);var hs=S.houses.filter(function(h){return h.b===k&&h.st!=='none'});
+  if(!b.closed&&hs.length&&hs.every(function(h){return h.st==='res'||h.st==='desc'})){b.closed=true;var nr=hs.filter(function(h){return h.st==='res'}).length;
+    S.history.unshift({name:b.name,type:hs[0].type,date:'hoy · '+now(),iso:new Date().toISOString().slice(0,10),viv:nr+' / '+hs.length+' resueltas',origin:'ej',state:nr?'Cerrada':'Descartada',note:nr?'Cuadra mitigada por completo. Resolución registrada en cada vivienda.':'Afectación descartada tras revisión.'});
+    S.steps.closed=1;S.sel=null;toast('La cuadra «'+b.name+'» salió del mapa principal. Búscala en Historial.');return true}return false}
+
+/* ---------- map ---------- */
+function mapHTML(mode){
+  var s='';
+  S.blocks.forEach(function(b){s+='<div class="blk'+(b.park?' park':'')+'" style="left:'+b.x+'px;top:'+b.y+'px"></div>'});
+  S.houses.forEach(function(h){
+    var cls='',pk='';
+    if(mode==='muni'){
+      if(h.st!=='none'&&!blk(h.b).closed&&h.st!=='desc')cls=h.st;
+      else if(S.histLayer&&h.hist)cls=h.hist;
+    }else{
+      if(h.src==='junta'&&h.st!=='none')cls='rep';else if(h.st==='none'&&!h.custom&&S.junta.mode==='contour')pk=' pick';
+    }
+    if(h.custom&&mode!=='muni'&&h.st==='none')return;
+    if(h.custom&&mode==='muni'&&(h.st==='none'||blk(h.b).closed))return;
+    s+='<button class="h '+cls+pk+'" data-act="'+(mode==='muni'?(cls&&cls.indexOf('h')!==0?'sel:':cls?'hinfo:':'')+h.id:(pk||cls?'pick:'+h.id:''))+'" aria-label="Vivienda '+num(h)+'" style="left:'+h.x+'px;top:'+h.y+'px" tabindex="-1"></button>';
+    if(mode==='muni'&&h.urg&&h.st!=='none'&&!blk(h.b).closed&&h.st!=='desc')s+='<div class="pin" style="left:'+(h.x+9)+'px;top:'+(h.y-9)+'px">!</div>';
+    if(mode==='muni'&&(S.sel===h.id))s+='<div class="ring" style="left:'+(h.x-5)+'px;top:'+(h.y-5)+'px"></div>';
+    if(mode==='muni'&&S.multi[h.id])s+='<div class="ring multi" style="left:'+(h.x-5)+'px;top:'+(h.y-5)+'px"></div>';
+    if(mode==='junta'&&S.junta.pick===h.id)s+='<div class="ring" style="left:'+(h.x-5)+'px;top:'+(h.y-5)+'px"></div>';
+  });
+  S.blocks.forEach(function(b){
+    var t='';if(mode==='muni'){if(!b.closed&&S.houses.some(function(h){return h.b===b.k&&h.st!=='none'&&h.st!=='desc'}))t=b.name;else if(S.histLayer&&b.hist)t=b.hist}
+    if(t)s+='<div class="bl" style="left:'+b.x+'px;top:'+(b.y+BH/2-6)+'px">'+esc(t)+'</div>'});
+  if(mode==='junta'&&S.junta.mode==='draw'&&S.junta.rect){var r=S.junta.rect;s+='<div class="rect" id="rectEl" style="left:'+r.x+'px;top:'+r.y+'px;width:'+r.w+'px;height:'+r.h+'px"></div>';
+    [[0,0],[r.w,0],[0,r.h],[r.w,r.h],[r.w/2,0],[r.w/2,r.h]].forEach(function(p){s+='<div class="hdl" style="left:'+(r.x+p[0]-5)+'px;top:'+(r.y+p[1]-5)+'px"></div>'})}
+  return s;
+}
+function legendHTML(){return '<div class="ov legend"><b>Leyenda</b>'+
+  '<div><i style="background:var(--rep-bg);box-shadow:inset 0 0 0 1.5px var(--rep)"></i>Afectación reportada (Por verificar)</div>'+
+  '<div><i style="background:var(--ver-bg);box-shadow:inset 0 0 0 1.5px var(--ver)"></i>Vivienda verificada</div>'+
+  '<div><i style="background:var(--res-bg);box-shadow:inset 0 0 0 1.5px var(--res)"></i>Vivienda resuelta</div>'+
+  '<div><i style="background:var(--h0)"></i>Sin reporte</div>'+
+  '<div><i style="background:var(--rep);border-radius:50%"></i>Urgente (marcada por el municipio)</div>'+
+  (S.histLayer?'<div><i style="background:var(--hd)"></i>Histórico · destruida</div><div><i style="background:var(--hm);box-shadow:inset 0 0 0 1.5px var(--hd)"></i>Histórico · dañada</div>':'')+'</div>'}
+
+/* ---------- screens ---------- */
+function header(){
+  return '<div class="app"><div class="brand"><span class="mark"></span>Baliza</div>'+
+  '<div class="seg" role="tablist"><button data-act="tab:proto" class="'+(S.tab==='proto'?'on':'')+'">Prototipo</button><button data-act="tab:scope" class="'+(S.tab==='scope'?'on':'')+'">Alcance del MVP</button></div>'+
+  '<span class="sp"></span>'+
+  (S.role&&S.tab==='proto'?'<span class="pill">'+(S.role==='junta'?'Cuenta de la junta · Villa Independencia':'Evaluador municipal · cuenta de prueba')+'</span>'+
+   (S.role==='muni'?'<div class="seg"><button data-act="goto:muni" class="'+(S.screen==='muni'?'on':'')+'">Mapa</button><button data-act="goto:hist" class="'+(S.screen==='hist'?'on':'')+'">Historial</button></div>':'')+
+   '<button class="btn o sm" data-act="logout">Cambiar de cuenta</button>':'')+
+  '<button class="btn o sm" data-act="reset">Reiniciar demo</button></div>';
+}
+function guide(){
+  var st=[['sent','Junta envía un reporte'],['seen','Municipio lo ve «Por verificar»'],['res1','Cierra una vivienda con detalle'],['urgcycle','Marca y retira una urgencia'],['closed','Cierra la última: la cuadra sale del mapa'],['inhist','La encuentra en Historial']];
+  return '<div class="guide"><b>Recorrido de la demo</b>'+st.map(function(x,i){var d=S.steps[x[0]];return '<span class="st'+(d?' d':'')+'"><i>'+(d?'✓':(i+1))+'</i>'+x[1]+'</span>'}).join('')+'</div>';
+}
+function loginHTML(){
+  return '<div class="card login"><div class="lbrand"><div class="brand" style="color:#fff"><span class="mark" style="background:#fff"></span>Baliza</div>'+
+  '<div><h1>Qué se reportó, dónde verificar primero.</h1><p style="color:#C7DDEB;font-size:15px;margin:14px 0 0;max-width:420px">Una vista territorial para que el municipio coordine la evaluación de afectaciones junto a las juntas de vecinos.</p></div>'+
+  '<div style="font-size:12px;color:#9CC2DA">Entorno de acceso cerrado · Datos sintéticos de prueba</div></div>'+
+  '<div class="lform"><h2 style="font-family:var(--f-head);font-size:26px;margin:0">Iniciar sesión</h2><div class="mut">Elige una cuenta de prueba para recorrer el flujo.</div>'+
+  (S.loginErr?'<div class="note n-err" role="alert">Sesión no válida o sin permisos para esta acción.</div>':'')+
+  '<div class="acc"><b>Cuenta de la junta de vecinos</b><input type="text" value="junta@demo.baliza.cl" aria-label="Correo junta"><input type="password" value="demodemo" aria-label="Contraseña junta"><button class="btn" data-act="login:junta">Ingresar como junta</button></div>'+
+  '<div class="acc"><b>Cuenta municipal</b><input type="text" value="municipio@demo.baliza.cl" aria-label="Correo municipio"><input type="password" value="demodemo" aria-label="Contraseña municipio"><button class="btn" data-act="login:muni">Ingresar como municipio</button></div>'+
+  '<button class="btn o sm" style="align-self:flex-start" data-act="badlogin">Probar una sesión no válida</button>'+
+  '<div class="note n-warn">Cuentas de prueba creadas por el equipo. No se usan datos reales de personas.</div></div></div>';
+}
+function juntaHTML(){
+  var j=S.junta;var ok=(j.mode==='contour'&&j.pick)||(j.mode==='draw'&&j.rect&&j.rect.w>10&&j.rect.h>10);
+  var evs=['Incendio','Inundación','Aluvión','Otro'];
+  var sentN=S.houses.filter(function(h){return h.src==='junta'&&h.st!=='none'}).length;
+  return '<div class="work junta"><div class="mapbox"><div class="mapscroll"><div class="map'+(j.mode==='draw'?' draw':'')+'" id="map" data-mode="junta">'+mapHTML('junta')+
+   '<div class="simtag">Datos simulados · entorno de prueba</div><div class="attr">© OpenFreeMap · MapLibre · datos de OpenStreetMap</div></div></div>'+
+   '<div class="mapnote">'+(j.mode==='contour'?'Haz clic en el contorno de una vivienda (cuadrado gris).':'Arrastra sobre el mapa para dibujar un recuadro aproximado de la vivienda.')+' El mapa es una maqueta; en el producto será MapLibre con Terra Draw.</div></div>'+
+   '<div class="card panel"><h2>Nuevo reporte</h2>'+
+   '<div><div class="lbl">Tipo de evento</div><div class="evt">'+evs.map(function(e){return '<button data-act="type:'+e+'" class="'+(j.type===e?'on':'')+'">'+e+'</button>'}).join('')+'</div></div>'+
+   '<div><div class="lbl">Ubicación de la vivienda</div><div class="seg"><button style="flex:1" data-act="mode:contour" class="'+(j.mode==='contour'?'on':'')+'">Usar contorno</button><button style="flex:1" data-act="mode:draw" class="'+(j.mode==='draw'?'on':'')+'">Dibujar recuadro</button></div>'+
+   '<div class="mut" style="font-size:12px;margin-top:8px">Si hay un contorno que corresponde, haz clic en él. Si falta o no coincide, dibuja un recuadro aproximado y ajústalo.</div>'+
+   (ok?'<div class="note n-ok" style="margin-top:8px">Vivienda marcada'+(j.mode==='contour'?' · '+esc(addr(house(j.pick))):'')+'<div style="margin-top:8px"><button class="btn sm" data-act="resetrect">'+(j.mode==='draw'?'Restablecer recuadro':'Quitar selección')+'</button></div></div>':'<div class="note n-warn" style="margin-top:8px">Aún no marcas ninguna vivienda.</div>')+'</div>'+
+   '<div><div class="lbl">Descripción <span class="mut" style="font-weight:400">opcional</span></div><textarea id="jdesc" placeholder="Puedes agregar detalles más tarde.">'+esc(j.desc||'')+'</textarea></div>'+
+   '<div class="note n-info">Aparecerá de inmediato en el mapa municipal como «Por verificar».</div>'+
+   '<button class="btn" data-act="send" '+(ok&&!S.sending?'':'disabled')+'>'+(S.sending?'Enviando…':'Enviar reporte')+'</button>'+
+   (sentN?'<div class="note n-ok">'+sentN+' reporte'+(sentN>1?'s':'')+' enviado'+(sentN>1?'s':'')+'. Entra con la cuenta municipal para verlo.<div style="margin-top:8px"><button class="btn sm" data-act="login:muni">Ver como municipio</button></div></div>':'')+
+   '</div></div>';
+}
+function muniHTML(){
+  var vis=visible();var f=S.filter;
+  var list=vis.filter(function(h){return f==='all'?true:f==='urg'?h.urg:h.st===f}).sort(function(a,b){return (b.urg-a.urg)||(b.t0-a.t0)||(a.n-b.n)});
+  var cnt=function(fn){return vis.filter(fn).length};
+  var chips=[['all','Todos '+vis.length],['rep','Por verificar '+cnt(function(h){return h.st==='rep'})],['urg','Urgente '+cnt(function(h){return h.urg})],['ver','Verificada '+cnt(function(h){return h.st==='ver'})],['res','Resuelta '+cnt(function(h){return h.st==='res'})]];
+  var nm=Object.keys(S.multi).length;
+  var h=S.sel?house(S.sel):null;if(h&&(h.st==='none'||blk(h.b).closed))h=null;
+  var side='<div class="card side"><div class="row"><h2>Reportes del sector</h2><span class="sp"></span><span class="mut" style="font-size:12px">'+vis.length+' activos</span></div>'+
+   '<div class="chips">'+chips.map(function(c){return '<button class="chip'+(f===c[0]?' on':'')+'" data-act="filter:'+c[0]+'">'+c[1]+'</button>'}).join('')+'</div>'+
+   (list.length?list.map(function(x){return '<div class="item'+(S.sel===x.id?' sel':'')+'"><input class="cb" type="checkbox" data-act="chk:'+x.id+'" '+(S.multi[x.id]?'checked':'')+' aria-label="Seleccionar '+num(x)+'"><button style="all:unset;cursor:pointer;display:flex;flex-direction:column;gap:3px;flex:1;min-width:0" data-act="sel:'+x.id+'"><b>Vivienda '+num(x)+' · '+esc(addr(x))+'</b><span>'+badges(x)+'</span><small>'+esc(x.type)+' · '+(x.src==='junta'?'recién enviado':'junta de prueba')+'</small></button></div>'}).join(''):'<div class="mut">No hay reportes con este filtro.</div>')+
+   (nm?'<div class="bar"><b>'+nm+' vivienda'+(nm>1?'s':'')+' seleccionada'+(nm>1?'s':'')+'</b><span style="font-size:12px;opacity:.85">Puedes marcarlas como «Urgente» aunque aún no estén verificadas. El cambio queda en el historial.</span><div class="row"><button class="btn red" data-act="markurg">Marcar como Urgente</button><button class="btn o sm" data-act="clearmulti">Limpiar</button></div></div>':'')+'</div>';
+  var hinfo='';if(S.histInfo){var hh=house(S.histInfo);hinfo='<div class="ov" style="left:10px;top:44px;max-width:300px"><b>Vivienda histórica</b><br>Daño: <b>'+(hh.hist==='hd'?'Destruida':'Dañada')+'</b> · 02 feb 2024<br>Fuente: CIGIDEN (fig. 63) · Copernicus EMSN188<br><span class="badge b-gr" style="margin-top:6px">Dato histórico, no es un reporte</span></div>'}
+  var map='<div class="mapbox"><div class="mapscroll"><div class="map" id="map" data-mode="muni">'+mapHTML('muni')+'<div class="simtag">Datos simulados · entorno de prueba</div>'+
+   '<div class="ov" style="right:10px;top:10px"><b>Capas</b><div style="display:flex;flex-direction:column;gap:6px;margin-top:6px"><label class="row" style="gap:8px"><input type="checkbox" checked disabled>Mapa de riesgos</label><label class="row" style="gap:8px"><input type="checkbox" data-act="tghist" '+(S.histLayer?'checked':'')+'>Capa histórica (datos de prueba)</label></div></div>'+
+   legendHTML()+hinfo+'<div class="attr">© OpenFreeMap · MapLibre · datos de OpenStreetMap</div></div></div><div class="mapnote">Mapa maqueta. Haz clic en una vivienda marcada para abrir su detalle. Activa «Capa histórica» para ver el daño de 2024 con su fuente.</div></div>';
+  var det='';
+  if(h){var b=blk(h.b);var bh=S.houses.filter(function(x){return x.b===h.b&&x.st!=='none'});var nr=bh.filter(function(x){return x.st==='res'}).length;var closed=(h.st==='res'||h.st==='desc');
+    det='<div class="card panel"><div class="row"><h2>Vivienda '+num(h)+'</h2><span class="sp"></span><button class="btn o sm" data-act="closedet" aria-label="Cerrar detalle">✕</button></div>'+
+     '<div class="mut" style="font-size:13px">'+esc(addr(h))+' · '+esc(h.type)+'</div><div>'+badges(h)+'</div>'+
+     '<div class="ctx"><b>Contexto del sector</b><div><span>Reportado por</span><span>'+(h.src==='junta'?'Junta Villa Independencia (esta demo)':'Junta de prueba')+'</span></div><div><span>Cuadra</span><span>'+nr+' de '+bh.length+' viviendas resueltas</span></div><div><span>Mapa de riesgos</span><span>Incendio forestal · riesgo alto</span></div><div><span>Alerta externa</span><span>Coincide con foco · Copernicus EMSN188</span></div></div>'+
+     '<div><b>Verificación en terreno</b><label class="row" style="margin:8px 0;gap:8px"><input class="cb" type="checkbox" data-act="verify" '+((h.st==='ver'||h.st==='res')?'checked':'')+' '+(closed?'disabled':'')+'> Revisé lo reportado en esta vivienda</label><div class="lbl">Observaciones de la visita</div><textarea id="obs" '+(closed?'disabled':'')+' placeholder="Ej.: estructura con daño parcial, familia evacuada…">'+esc(h.obs)+'</textarea></div>'+
+     '<div class="urgbox"><div style="flex:1"><b>Urgente</b><div>'+(h.urg?'Al retirarla deberás dejar una nota breve.':'Etiqueta manual según tu criterio. Puedes marcarla antes de verificar.')+'</div></div><button class="tg'+(h.urg?' on':'')+'" role="switch" aria-checked="'+(!!h.urg)+'" aria-label="Urgente" data-act="tgurg"></button></div>'+
+     (closed?'<div class="note n-ok">Vivienda '+(h.st==='res'?'resuelta':'descartada')+'. '+(h.urg?'':'')+'Su registro se conserva en el historial.</div>':
+      '<div><b>Cerrar vivienda</b><div class="lbl" style="margin-top:8px">¿Cómo se solucionó? <span class="req">obligatorio</span></div><textarea id="restext" class="r" placeholder="Describe cómo se mitigó la afectación…">'+esc(S.resText)+'</textarea><div class="row" style="margin-top:8px"><button class="btn o" data-act="discard">Descartar</button><button class="btn" id="resbtn" style="flex:1" data-act="resolve" '+(S.resText.trim().length<3?'disabled':'')+'>Marcar como resuelta</button></div><div class="mut" style="font-size:11px;margin-top:6px">El botón se activa al completar el detalle de resolución.</div></div>')+
+     '<div><b>Historial de la vivienda</b><div class="tl" style="margin-top:8px">'+h.log.map(function(e){return '<div><b'+(e.cls?' class="'+e.cls+'"':'')+'>'+e.t+' · '+esc(e.txt)+'</b></div>'}).join('')+'</div></div></div>';}
+  return '<div class="work'+(h?'':' nodet')+'">'+side+map+det+'</div>';
+}
+function histHTML(){
+  var rows=S.history.filter(function(r){return (S.origin==='all'||r.origin===S.origin)&&(!S.dfrom||r.iso>=S.dfrom)&&(!S.dto||r.iso<=S.dto)});
+  return '<div class="card" style="padding:18px 0 0"><div style="padding:0 18px 14px"><h2 style="font-family:var(--f-head);font-size:22px;margin:0">Historial del sector</h2><div class="mut">Cuadras cerradas y afectaciones descartadas. Lo registrado en la app se muestra separado de la capa histórica.</div>'+
+   '<div class="row" style="margin-top:12px"><label class="row">Desde <input type="date" id="dfrom" value="'+(S.dfrom||'')+'" style="width:auto"></label><label class="row">Hasta <input type="date" id="dto" value="'+(S.dto||'')+'" style="width:auto"></label><label class="row">Origen <select id="orig" style="width:auto"><option value="all"'+(S.origin==='all'?' selected':'')+'>Todos</option><option value="ej"'+(S.origin==='ej'?' selected':'')+'>Ejercicio de prueba</option><option value="hist"'+(S.origin==='hist'?' selected':'')+'>Capa histórica</option></select></label></div></div>'+
+   '<div class="tw"><table><thead><tr><th>Cuadra / sector</th><th>Evento</th><th>Reportada</th><th>Viviendas</th><th>Origen</th><th>Estado</th><th>Cierre / resolución</th></tr></thead><tbody>'+
+   rows.map(function(r){return '<tr><td><b>'+esc(r.name)+'</b></td><td>'+r.type+'</td><td>'+esc(r.date)+'</td><td>'+esc(r.viv)+'</td><td><span class="badge '+(r.origin==='ej'?'b-ver':'b-gr')+'">'+(r.origin==='ej'?'Ejercicio de prueba':'Capa histórica')+'</span></td><td><span class="badge '+(r.state==='Cerrada'?'b-res':'b-gr')+'">'+r.state+'</span></td><td>'+esc(r.note)+'</td></tr>'}).join('')+'</tbody></table></div></div>';
+}
+function scopeHTML(){
+  return '<div class="grid3"><div class="card" style="padding:18px"><h3>Dentro del MVP</h3><ul class="l"><li>Inicio de sesión con cuentas de prueba (Better Auth)</li><li>Junta: marcar vivienda (contorno o recuadro ajustable) y enviar</li><li>Municipio: mapa con «Por verificar», «Urgente», verificada y resuelta</li><li>Verificación y cierre con detalle obligatorio</li><li>Urgencia aplicada y retirada con nota, también en lote</li><li>Historial y capa histórica de Viña del Mar, separados</li></ul></div>'+
+  '<div class="card" style="padding:18px"><h3>Fuera del MVP</h3><ul class="l"><li>Versión celular</li><li>Imágenes satelitales</li><li>Operación offline y sincronización</li><li>Ficha médica, bot de WhatsApp, rutas automáticas</li></ul><p class="mut" style="font-size:12px">Alcance según los tickets KAI-7 y KAI-11 de Linear. Todo usa datos sintéticos.</p></div>'+
+  '<div class="card" style="padding:18px"><h3>Dónde ver cada ticket</h3><ul class="l"><li><b>KAI-7</b> · Junta y vista municipal (Prototipo)</li><li><b>KAI-11</b> · Sesión no válida en el inicio de sesión</li><li><b>KAI-12</b> · Verificación, cierre y cuadra</li><li><b>KAI-16</b> · Urgencias, con nota al retirar</li><li><b>KAI-17</b> · Registro de urgencia en la vivienda</li><li><b>KAI-23</b> · Capa histórica con su fuente</li></ul></div></div>'+
+  '<div class="card" style="padding:18px"><h3>Stack acordado</h3><div class="mut">React + TypeScript + Vite · Tailwind + shadcn/ui · React Hook Form + TanStack Query · mapcn / MapLibre con calles de OpenFreeMap · Terra Draw · Better Auth · FastAPI · PostgreSQL en Supabase. Esta página es una maqueta navegable: el mapa y los datos son simulados.</div></div>';
+}
+function modalHTML(){
+  if(!S.modal)return '';var h=house(S.modal.id);
+  return '<div class="modalbg" role="dialog" aria-modal="true"><div class="modal"><h2 style="font-family:var(--f-head);font-size:18px;margin:0">Retirar urgencia · Vivienda '+num(h)+'</h2><div class="mut" style="font-size:13px">Deja un registro breve de lo que encontraste o hiciste. Quedará en el historial. Retirar la urgencia no cierra la afectación.</div><div><div class="lbl">¿Qué encontraste o hiciste? <span class="req">obligatorio</span></div><textarea id="notetext" class="r" placeholder="Ej.: familia atendida, brigada ya en el lugar…">'+esc(S.noteText)+'</textarea></div><div class="row" style="justify-content:flex-end"><button class="btn o" data-act="mcancel">Cancelar</button><button class="btn red" id="mok" data-act="mok" '+(S.noteText.trim().length<3?'disabled':'')+'>Retirar urgencia</button></div></div></div>';
+}
+function render(){
+  var body='';
+  if(S.tab==='scope')body=scopeHTML();
+  else{
+    if(S.screen==='login')body=loginHTML();
+    else{body=guide();
+      if(S.screen==='junta')body+=juntaHTML();
+      else if(S.screen==='muni'){if(S.houses.some(function(h){return h.src==='junta'&&h.st!=='none'}))S.steps.seen=1;body=guide()+muniHTML()}
+      else if(S.screen==='hist'){if(S.steps.closed)S.steps.inhist=1;body=guide()+histHTML()}}
+  }
+  var fs=document.activeElement&&document.activeElement.id;
+  document.getElementById('app').innerHTML=header()+body;
+  document.getElementById('layer').innerHTML=modalHTML();
+  bindMap();
+}
+/* ---------- map drawing ---------- */
+function bindMap(){
+  var m=document.getElementById('map');if(!m||m.getAttribute('data-mode')!=='junta'||S.junta.mode!=='draw')return;
+  var st=null;
+  function pt(e){var r=m.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
+  m.addEventListener('pointerdown',function(e){st=pt(e);m.setPointerCapture(e.pointerId);S.junta.rect={x:st.x,y:st.y,w:0,h:0};e.preventDefault()});
+  m.addEventListener('pointermove',function(e){if(!st)return;var p=pt(e);var r={x:Math.min(st.x,p.x),y:Math.min(st.y,p.y),w:Math.abs(p.x-st.x),h:Math.abs(p.y-st.y)};S.junta.rect=r;var el=document.getElementById('rectEl');if(!el){el=document.createElement('div');el.className='rect';el.id='rectEl';m.appendChild(el)}el.style.cssText='left:'+r.x+'px;top:'+r.y+'px;width:'+r.w+'px;height:'+r.h+'px'});
+  m.addEventListener('pointerup',function(e){if(!st)return;st=null;if(S.junta.rect.w<10||S.junta.rect.h<10)S.junta.rect=null;render()});
+}
+/* ---------- actions ---------- */
+function act(a,el){
+  var p=a.split(':'),k=p[0],v=p.slice(1).join(':');
+  if(k==='tab'){S.tab=v}
+  else if(k==='login'){S.role=v;S.screen=v;S.loginErr=false;S.sel=null}
+  else if(k==='badlogin'){S.loginErr=true}
+  else if(k==='logout'){S.role=null;S.screen='login'}
+  else if(k==='reset'){init()}
+  else if(k==='goto'){S.screen=v;S.sel=null}
+  else if(k==='type'){S.junta.type=v}
+  else if(k==='mode'){S.junta.mode=v;S.junta.pick=null;S.junta.rect=null}
+  else if(k==='pick'){var h=house(v);if(h&&h.st==='none'&&!h.custom&&S.junta.mode==='contour')S.junta.pick=v}
+  else if(k==='resetrect'){S.junta.rect=null;S.junta.pick=null;render()}
+  else if(k==='send'){if(!S._go){if(S.sending)return;S.sending=true;render();setTimeout(function(){S._go=1;S.sending=false;act('send');S._go=0},800);return}
+    var j=S.junta,d=S.junta.desc||'';S.junta.desc='';
+    if(j.mode==='contour'&&j.pick){var h2=house(j.pick);h2.st='rep';h2.src='junta';h2.type=j.type;h2.t0=Date.now();h2.log=[{t:now(),txt:'Reporte recibido · Junta Villa Independencia · Por verificar'+(d?' · «'+d+'»':'')}];j.pick=null}
+    else if(j.mode==='draw'&&j.rect){var r=j.rect,cx=r.x+r.w/2,cy=r.y+r.h/2;var b=S.blocks.filter(function(b){return cx>=b.x&&cx<=b.x+BW&&cy>=b.y&&cy<=b.y+BH})[0];
+      if(!b){b={k:'N'+Date.now(),r:9,c:9,x:0,y:0,name:'Zona marcada por la junta',closed:false};S.blocks.push(b)}
+      var n=S.houses.length+1;S.houses.push({id:'H'+n+'x',n:n,b:b.k,x:r.x,y:r.y,w:r.w,h:r.h,st:'rep',urg:false,log:[{t:now(),txt:'Reporte recibido · Junta Villa Independencia · Por verificar (recuadro dibujado)'+(d?' · «'+d+'»':'')}],obs:'',src:'junta',type:j.type,t0:Date.now(),custom:true});
+      var hh=S.houses[S.houses.length-1];hh.custom=true;j.rect=null}
+    S.steps.sent=1;toast('Reporte enviado. Aparece en el mapa municipal como «Por verificar».')}
+  else if(k==='sel'){S.sel=v;S.resText='';S.histInfo=null}
+  else if(k==='hinfo'){S.histInfo=v;S.sel=null}
+  else if(k==='closedet'){S.sel=null}
+  else if(k==='chk'){if(S.multi[v])delete S.multi[v];else S.multi[v]=1}
+  else if(k==='clearmulti'){S.multi={}}
+  else if(k==='markurg'){Object.keys(S.multi).forEach(function(id){var h=house(id);if(!h.urg){h.urg=true;log(h,'Marcada como Urgente','u')}});toast('Urgencia aplicada. Queda registrada en el historial de cada vivienda.');S.multi={}}
+  else if(k==='filter'){S.filter=v}
+  else if(k==='tghist'){S.histLayer=!S.histLayer;S.histInfo=null}
+  else if(k==='verify'){var h3=house(S.sel);if(el.checked&&h3.st==='rep'){h3.st='ver';log(h3,'Verificada en terreno'+(h3.obs?' · «'+h3.obs+'»':''))}else if(!el.checked&&h3.st==='ver'){h3.st='rep';log(h3,'Verificación revertida')}}
+  else if(k==='tgurg'){var h4=house(S.sel);if(h4.urg){S.modal={id:h4.id};S.noteText=''}else{h4.urg=true;log(h4,'Marcada como Urgente','u')}}
+  else if(k==='mcancel'){S.modal=null}
+  else if(k==='mok'){var h5=house(S.modal.id);if(S.noteText.trim().length>=3){h5.urg=false;log(h5,'Urgencia retirada · Nota: «'+S.noteText.trim()+'»');S.steps.urgcycle=1;S.modal=null;toast('Urgencia retirada. El estado de la vivienda no cambió.')}}
+  else if(k==='resolve'){var h6=house(S.sel);if(S.resText.trim().length>=3){h6.st='res';log(h6,'Resuelta · «'+S.resText.trim()+'»','g');S.steps.res1=1;S.resText='';
+      if(!checkClose(h6.b))toast('Vivienda resuelta: ahora se ve en verde. La cuadra sigue visible mientras haya afectaciones pendientes.')}}
+  else if(k==='discard'){var h7=house(S.sel);h7.st='desc';log(h7,'Afectación descartada');if(!checkClose(h7.b))toast('Afectación descartada. Deja de destacarse en el mapa y queda en el historial.')}
+  render();
+}
+var app=document.getElementById('app');
+document.addEventListener('click',function(e){var t=e.target.closest('[data-act]');if(!t||t.tagName==='INPUT'&&t.type==='checkbox'&&false)return;
+  if(t.tagName==='INPUT'&&t.type==='checkbox')return; // checkboxes handled by change
+  if(t.id==='map')return;var a=t.getAttribute('data-act');if(!a)return;act(a,t)});
+document.addEventListener('change',function(e){var t=e.target;if(t.id==='orig'){S.origin=t.value;render();return}
+  if(t.id==='dfrom'){S.dfrom=t.value;render();return}
+  if(t.id==='dto'){S.dto=t.value;render();return}
+  if(t.tagName==='INPUT'&&t.type==='checkbox'&&t.getAttribute('data-act')){act(t.getAttribute('data-act'),t)}});
+document.addEventListener('input',function(e){var t=e.target;
+  if(t.id==='jdesc'){S.junta.desc=t.value}
+  else if(t.id==='obs'&&S.sel){house(S.sel).obs=t.value}
+  else if(t.id==='restext'){S.resText=t.value;var b=document.getElementById('resbtn');if(b)b.disabled=t.value.trim().length<3}
+  else if(t.id==='notetext'){S.noteText=t.value;var b2=document.getElementById('mok');if(b2)b2.disabled=t.value.trim().length<3}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&S.modal){S.modal=null;render()}});
+init();render();
+})();
+</script>
